@@ -205,7 +205,7 @@ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-
 // detect software rendering (no GPU / hardware acceleration off) → LITE mode
 const _gl=R.getContext(),_dbg=_gl.getExtension('WEBGL_debug_renderer_info');const GPU=_dbg?String(_gl.getParameter(_dbg.UNMASKED_RENDERER_WEBGL)):'';
 let LITE=/SwiftShader|Basic Render|llvmpipe|Software|softpipe/i.test(GPU)||innerWidth<700;let usePost=!LITE;
-let PR=LITE?Math.min(devicePixelRatio,.6):Math.min(devicePixelRatio,1.25);R.setPixelRatio(PR);if(LITE)R.shadowMap.enabled=false;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+let PR=LITE?Math.min(devicePixelRatio,.45,760/innerWidth):Math.min(devicePixelRatio,1.25);R.setPixelRatio(PR);if(LITE)R.shadowMap.enabled=false;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
 const S=new THREE.Scene();S.background=new THREE.Color(0x0b0a09);S.fog=new THREE.FogExp2(0x0b0a09,.045);
 const pm=new THREE.PMREMGenerator(R);S.environment=pm.fromScene(new RoomEnvironment(),.04).texture;
