@@ -48,7 +48,9 @@ ul.f li:before{content:'▸ ';color:var(--wood)}
 .ticker div{display:inline-block;white-space:nowrap;animation:tk 30s linear infinite;font:800 22px 'Big Shoulders Display';letter-spacing:3px;text-transform:uppercase}
 .ticker span{color:var(--wood);margin:0 22px}
 @keyframes tk{to{transform:translateX(-50%)}}
-.full{flex-direction:column;align-items:stretch;background:linear-gradient(transparent,#0d0c0bf0 12%,#0d0c0bf0 88%,transparent)}
+.full{flex-direction:column;align-items:stretch;background:linear-gradient(90deg,rgba(13,12,11,.93) 0%,rgba(13,12,11,.82) 50%,rgba(13,12,11,.15) 78%,transparent)}
+.full>*{max-width:60%}@media(max-width:1100px){.full>*{max-width:none}.full{background:rgba(13,12,11,.82)}}
+.full .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-top:30px}
 .prod{background:#17140f;border:1px solid #ffffff12;border-radius:16px;padding:22px;transition:.3s}
 .prod:hover{border-color:var(--wood);transform:translateY(-4px)}
@@ -135,7 +137,7 @@ footer a{color:var(--burn)}
   <div class="grid" id="grid"></div>
 </section>
 
-<section class="full" id="surec">
+<section class="full" id="surec" data-s>
   <div class="eyebrow">06 — Süreç</div><h2>Fikirden <em>teslime</em></h2>
   <div class="steps">
     <div class="step"><b>01</b><h3>Fikir</h3><p>Fotoğraf, çizim ya da DXF/SVG dosyanızı WhatsApp'tan gönderin.</p></div>
@@ -145,7 +147,7 @@ footer a{color:var(--burn)}
   </div>
 </section>
 
-<section class="full" id="teklif">
+<section class="full" id="teklif" data-s>
   <div class="eyebrow">07 — Teklif Sihirbazı</div><h2>Projenizi <em>anlatın</em></h2>
   <p>Formu doldurun, mesaj hazır olsun — tek tıkla WhatsApp'tan gönderin.</p>
   <div class="quote">
@@ -199,7 +201,7 @@ const v=document.getElementById('bg'),cv=document.getElementById('c');
 const small=Math.min(innerWidth,innerHeight)<700||innerWidth<900;
 v.src=small?'media/cnc-720.mp4':'media/cnc-1080.mp4';v.load();
 const secs=[...document.querySelectorAll('[data-s]')];const cl=x=>Math.max(0,Math.min(1,x));
-function stage(){const mid=innerHeight*.5;let s=0;for(let i=0;i<secs.length;i++){const r=secs[i].getBoundingClientRect();if(r.top<=mid)s=i+cl((mid-r.top)/r.height)}return Math.min(s,5)}
+function stage(){const mid=innerHeight*.5;let s=0;for(let i=0;i<secs.length;i++){const r=secs[i].getBoundingClientRect();if(r.top<=mid)s=i+cl((mid-r.top)/r.height)}return Math.min(s,7)}
 let cur=0,seeking=false;v.addEventListener('seeked',()=>seeking=false);
 v.addEventListener('loadeddata',()=>{v.classList.add('on');v.pause()},{once:true});
 // mouse → machine coordinates in mm (work area 800 x 400 mm)
@@ -207,12 +209,12 @@ let mx=.5,my=.5,on=false;addEventListener('pointermove',e=>{mx=e.clientX/innerWi
 const $=id=>document.getElementById(id),HX=$('hx'),HY=$('hy'),HZ=$('hz'),HS=$('hs'),HB=$('hb'),HR=$('hr'),HF=$('hf');
 let rpm=0,t0=performance.now();
 function tick(){requestAnimationFrame(tick);const s=stage();
- if(v.readyState>=2&&v.duration){const target=s/5*(v.duration-.04);cur+= (target-cur)*.18;if(!seeking&&Math.abs(v.currentTime-cur)>1/45){seeking=true;v.currentTime=cur}}
- const cp=s>.75&&s<1.8,lp=s>1.8&&s<2.85,vp=s>2.85&&s<3.8,bp=s>3.6&&s<4.7;
- const mode=cp?'FREZE · G01':lp?'LAZER · M03':vp?'V-GRAVÜR · G01':bp?'MONTAJ':s>=4.7?'TAMAMLANDI':'BEKLEMEDE';
+ if(v.readyState>=2&&v.duration){const target=s/7*(v.duration-.04);cur+= (target-cur)*.18;if(!seeking&&Math.abs(v.currentTime-cur)>1/45){seeking=true;v.currentTime=cur}}
+ const cp=s>.75&&s<1.8,lp=s>1.8&&s<2.85,vp=s>2.85&&s<3.8,bp=s>3.6&&s<4.5;
+ const mode=cp?'FREZE · G01':lp?'LAZER · M03':vp?'V-GRAVÜR · G01':bp?'MONTAJ · BANK':s<4.6?'BANK':s<5.4?'DÖNÜŞÜM · MASA':s<5.6?'MASA':s<6.3?'DÖNÜŞÜM · ŞEZLONG':s<6.35?'ŞEZLONG':s<6.95?'DÖNÜŞÜM · SAKSILIK':'SAKSILIK ✓';
  rpm+=(((cp||vp)?18000:(s<.75?6000:0))-rpm)*.05;
  if(on){HX.textContent=(mx*800).toFixed(3);HY.textContent=((1-my)*400).toFixed(3)}
- HZ.textContent=(cp||vp)?'-3.000':lp?'35.000':'35.000';HR.textContent=Math.round(rpm);HF.textContent=(cp||vp)?2400:lp?3000:0;HS.textContent=mode;HB.style.width=(s/5*100)+'%';
+ HZ.textContent=(cp||vp)?'-3.000':lp?'35.000':'35.000';HR.textContent=Math.round(rpm);HF.textContent=(cp||vp)?2400:lp?3000:0;HS.textContent=mode;HB.style.width=(s/7*100)+'%';
  // crosshair follows mouse
  if(on){cv.style.setProperty('--x',(mx*100)+'%');cv.style.setProperty('--y',(my*100)+'%')}}
 tick();
