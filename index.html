@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WM Craft & Atölye — CNC & Lazer İşleme</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0c0b;--wood:#c8834a;--burn:#e8a76c;--cream:#efe6d8;--laser:#ff3b1f;--mut:#9b8f80}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:Manrope,sans-serif;overflow-x:hidden}
+#c{position:fixed;inset:0;width:100vw;height:100vh;z-index:0}
+.vig{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.65))}
+nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:28px;padding:16px 4vw;background:linear-gradient(#0d0c0bdd,transparent)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--cream)}
+.brand b{font-family:'Big Shoulders Display';font-size:22px;letter-spacing:1px}
+.brand small{display:block;font:11px 'JetBrains Mono';color:var(--wood)}
+nav .links{display:flex;gap:22px;margin-left:auto}
+nav .links a{color:var(--cream);text-decoration:none;font-size:14px;opacity:.8}
+nav .links a:hover{opacity:1;color:var(--burn)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:999px;font-weight:700;text-decoration:none;font-size:14px;border:1px solid var(--wood);color:var(--cream);background:transparent;cursor:pointer;transition:.25s}
+.btn.p{background:var(--wood);color:#1a0f07}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px #c8834a55}
+main{position:relative;z-index:5}
+section{min-height:100vh;padding:120px 6vw;display:flex;align-items:center}
+section.r{justify-content:flex-end}
+.card{max-width:500px;background:rgba(13,12,11,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #c8834a33;border-radius:18px;padding:36px}
+.eyebrow{font:600 12px 'JetBrains Mono';color:var(--wood);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+h1{font-family:'Big Shoulders Display';font-weight:900;font-size:clamp(56px,9vw,128px);line-height:.88;text-transform:uppercase}
+h1 em,h2 em{font-style:normal;color:var(--wood)}
+h2{font-family:'Big Shoulders Display';font-weight:800;font-size:clamp(40px,5.5vw,72px);line-height:.95;text-transform:uppercase;margin-bottom:16px}
+p{color:#d6cbbb;line-height:1.65}
+.hero{flex-direction:column;align-items:flex-start;justify-content:center}
+.hero p{max-width:520px;margin:22px 0 30px;font-size:18px}
+.stats{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap}
+.stat{border:1px solid #ffffff1f;border-radius:12px;padding:12px 18px;background:#0d0c0b88}
+.stat b{display:block;font-family:'Big Shoulders Display';font-size:28px;color:var(--burn)}
+.stat span{font-size:12px;color:var(--mut)}
+ul.f{list-style:none;margin-top:18px;display:grid;gap:8px}
+ul.f li{font:13px 'JetBrains Mono';color:var(--cream)}
+ul.f li:before{content:'▸ ';color:var(--wood)}
+.ticker{position:relative;z-index:5;overflow:hidden;border-block:1px solid #c8834a44;background:#0d0c0bcc;padding:14px 0}
+.ticker div{display:inline-block;white-space:nowrap;animation:tk 30s linear infinite;font:800 22px 'Big Shoulders Display';letter-spacing:3px;text-transform:uppercase}
+.ticker span{color:var(--wood);margin:0 22px}
+@keyframes tk{to{transform:translateX(-50%)}}
+.full{flex-direction:column;align-items:stretch;background:linear-gradient(transparent,#0d0c0bf0 12%,#0d0c0bf0 88%,transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-top:30px}
+.prod{background:#17140f;border:1px solid #ffffff12;border-radius:16px;padding:22px;transition:.3s}
+.prod:hover{border-color:var(--wood);transform:translateY(-4px)}
+.prod svg{width:56px;height:56px;stroke:var(--burn);fill:none;stroke-width:2;margin-bottom:14px}
+.prod h3{font-family:'Big Shoulders Display';font-size:24px;text-transform:uppercase}
+.prod p{font-size:13px;margin-top:6px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:30px}
+.step{border-top:2px solid var(--wood);padding-top:16px}
+.step b{font:600 13px 'JetBrains Mono';color:var(--wood)}
+.step h3{font-family:'Big Shoulders Display';font-size:26px;text-transform:uppercase;margin:6px 0}
+.quote{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:30px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font:12px 'JetBrains Mono';color:var(--mut);display:grid;gap:6px}
+label.w{grid-column:1/-1}
+input,select,textarea{background:#17140f;border:1px solid #ffffff22;color:var(--cream);border-radius:10px;padding:12px;font:14px Manrope}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--wood)}
+.preview{background:#0b1a12;border:1px solid #25d36655;border-radius:16px;padding:22px;font:13px/1.7 'JetBrains Mono';white-space:pre-wrap;color:#c9f5d8;min-height:260px}
+.wa{background:#25d366;border-color:#25d366;color:#05210f}
+.hud{position:fixed;left:18px;bottom:18px;z-index:15;font:12px 'JetBrains Mono';background:#0d0c0bcc;border:1px solid #c8834a44;border-radius:10px;padding:10px 14px;min-width:220px}
+.hud .row{display:flex;justify-content:space-between;gap:12px}
+.hud .st{color:var(--laser)}
+.bar{height:3px;background:#ffffff1a;margin-top:8px;border-radius:2px}
+.bar i{display:block;height:100%;width:0;background:var(--wood)}
+footer{position:relative;z-index:5;padding:50px 6vw;border-top:1px solid #ffffff14;background:#0a0908;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;color:var(--mut);font-size:13px}
+footer a{color:var(--burn)}
+@media(max-width:820px){nav .links{display:none}.quote,form{grid-template-columns:1fr}section,section.r{justify-content:center}.hud{display:none}.card{padding:24px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas><div class="vig"></div>
+
+<nav>
+  <a class="brand" href="#top">
+    <svg width="44" height="44" viewBox="0 0 100 100" aria-label="WM Craft logo">
+      <defs><path id="cp" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0"/></defs>
+      <circle cx="50" cy="50" r="48" fill="#120d09" stroke="#c8834a" stroke-width="2"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#c8834a55"/>
+      <text font-family="JetBrains Mono" font-size="8.5" fill="#c8834a" letter-spacing="1.5"><textPath href="#cp">WOODMAN STUDIO • CNC &amp; LAZER •</textPath></text>
+      <text x="50" y="60" text-anchor="middle" font-family="Big Shoulders Display" font-weight="900" font-size="30" fill="#efe6d8">WM</text>
+    </svg>
+    <div><b>WM CRAFT &amp; ATÖLYE</b><small>WOODMAN STUDIO</small></div>
+  </a>
+  <div class="links"><a href="#cnc">CNC</a><a href="#lazer">Lazer</a><a href="#gravur">Gravür</a><a href="#bahce">Bahçe</a><a href="#urunler">Ürünler</a><a href="#teklif">Teklif</a></div>
+  <a class="btn p" href="#teklif">Teklif Al</a>
+</nav>
+
+<main>
+<section class="hero" id="top" data-s>
+  <div class="eyebrow">🪵 CNC Router · Lazer · V-Bıçak Gravür</div>
+  <h1>Ahşaba<br>Şekil Veren<br><em>Dijital Zanaat.</em></h1>
+  <p>Özel ahşap tasarım, kurumsal çözümler, kişiselleştirilmiş ürünler ve fason üretim. Çiziminizi getirin, gerisini makine ve usta eli halletsin.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn p" href="#teklif">Anında Teklif İste</a><a class="btn" href="#urunler">Ürünleri Gör</a></div>
+  <div class="stats"><div class="stat"><b>CNC</b><span>Router kesim & oyma</span></div><div class="stat"><b>LAZER</b><span>Kesim & kazıma</span></div><div class="stat"><b>V-BIÇAK</b><span>Gravür</span></div><div class="stat"><b>FASON</b><span>Seri üretim</span></div></div>
+</section>
+
+<div class="ticker"><div>CNC ROUTER<span>✦</span>LAZER KESİM<span>✦</span>V-BIÇAK GRAVÜR<span>✦</span>BAHÇE MOBİLYASI<span>✦</span>ÖZEL TASARIM<span>✦</span>FASON ÜRETİM<span>✦</span>CNC ROUTER<span>✦</span>LAZER KESİM<span>✦</span>V-BIÇAK GRAVÜR<span>✦</span>BAHÇE MOBİLYASI<span>✦</span>ÖZEL TASARIM<span>✦</span>FASON ÜRETİM<span>✦</span></div></div>
+
+<section class="r" id="cnc" data-s><div class="card">
+  <div class="eyebrow">01 — CNC Router</div><h2>Masif ahşaptan <em>milimetrik</em> kesim</h2>
+  <p>Kaydırdıkça freze tablayı oyuyor. Mobilya parçaları, oyma panolar, kapı ve dolap kapakları, tabela ve dekoratif paneller — dosyanızdan doğrudan üretim.</p>
+  <ul class="f"><li>MDF · kontrplak · masif ahşap · pleksi</li><li>Oyma, delik, cep, profil kesim</li><li>DXF / SVG / AI / el çizimi</li></ul>
+</div></section>
+
+<section id="lazer" data-s><div class="card">
+  <div class="eyebrow">02 — Lazer Kesim & Kazıma</div><h2>Işıkla <em>yakılan</em> detay</h2>
+  <p>İnce desenler, kartal ve figür panolar, logo kazıma, isimli hediyelikler, mutfak setleri ve kurumsal promosyon ürünleri.</p>
+  <ul class="f"><li>Lazer kesim & yüzey kazıma</li><li>Kişiye özel isim / logo</li><li>Tek adetten seriye</li></ul>
+</div></section>
+
+<section class="r" id="gravur" data-s><div class="card">
+  <div class="eyebrow">03 — V-Bıçak Gravür</div><h2>Derin, <em>keskin</em> harfler</h2>
+  <p>V-bıçakla açılan yazılar ve desenler ışıkta gölge yapar, el oymasının hissini verir. Tabela, plaket, kapı isimliği, hatıra panoları.</p>
+  <ul class="f"><li>V-carve yazı ve logo</li><li>Dış mekan tabela</li><li>Kurumsal plaket</li></ul>
+</div></section>
+
+<section id="bahce" data-s><div class="card">
+  <div class="eyebrow">04 — Bahçe Mobilyası</div><h2>Bahçeye <em>dayanıklı</em> ahşap</h2>
+  <p>Bank, masa, sandalye, saksılık ve pergola detayları. Parçalar CNC'de hassas kesilir, atölyede montajlanır ve dış mekan koruyucuyla bitirilir.</p>
+  <ul class="f"><li>Ölçüye özel üretim</li><li>Dış mekan vernik & emprenye</li><li>Kafe / otel / ev bahçesi</li></ul>
+</div></section>
+
+<section class="full" id="urunler" data-s>
+  <div class="eyebrow">05 — Atölyeden</div><h2>Yaptıklarımız</h2>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section class="full" id="surec">
+  <div class="eyebrow">06 — Süreç</div><h2>Fikirden <em>teslime</em></h2>
+  <div class="steps">
+    <div class="step"><b>01</b><h3>Fikir</h3><p>Fotoğraf, çizim ya da DXF/SVG dosyanızı WhatsApp'tan gönderin.</p></div>
+    <div class="step"><b>02</b><h3>Tasarım</h3><p>Ölçü ve malzemeyi netleştirip önizleme hazırlıyoruz.</p></div>
+    <div class="step"><b>03</b><h3>Üretim</h3><p>CNC, lazer ve el işçiliğiyle atölyede üretim.</p></div>
+    <div class="step"><b>04</b><h3>Teslim</h3><p>Zımpara, boya/vernik, paketleme ve teslimat.</p></div>
+  </div>
+</section>
+
+<section class="full" id="teklif">
+  <div class="eyebrow">07 — Teklif Sihirbazı</div><h2>Projenizi <em>anlatın</em></h2>
+  <p>Formu doldurun, mesaj hazır olsun — tek tıkla WhatsApp'tan gönderin.</p>
+  <div class="quote">
+    <form id="qf">
+      <label>Hizmet<select name="h"><option>CNC kesim / oyma</option><option>Lazer kesim</option><option>Lazer kazıma</option><option>V-bıçak gravür</option><option>Bahçe mobilyası</option><option>Özel mobilya</option><option>Fason üretim</option><option>Kurumsal / promosyon</option></select></label>
+      <label>Malzeme<select name="m"><option>Masif ahşap</option><option>MDF</option><option>Kontrplak</option><option>Pleksi</option><option>Emin değilim</option></select></label>
+      <label>Ölçü (mm)<input name="o" placeholder="ör. 600 x 400"></label>
+      <label>Adet<input name="a" type="number" min="1" value="1"></label>
+      <label class="w">Adınız<input name="n" placeholder="Ad Soyad"></label>
+      <label class="w">Açıklama<textarea name="d" rows="4" placeholder="Ne yaptırmak istiyorsunuz?"></textarea></label>
+    </form>
+    <div>
+      <div class="preview" id="pv"></div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><a class="btn wa" id="wa" href="#">WhatsApp'tan Gönder</a><button class="btn" id="cp">Mesajı Kopyala</button></div>
+      <p style="font-size:13px;margin-top:12px">WhatsApp: <b>+90 541 764 59 29</b> · Instagram: <a style="color:var(--burn)" href="https://www.instagram.com/wmcraft.atolye/">@wmcraft.atolye</a></p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div><b style="color:var(--cream);font-family:'Big Shoulders Display';font-size:22px">WM CRAFT &amp; ATÖLYE</b><br>Woodman Studio · CNC & Lazer İşleme</div>
+  <div>+90 541 764 59 29<br><a href="https://www.instagram.com/wmcraft.atolye/">instagram.com/wmcraft.atolye</a></div>
+  <div>© 2026 WM Craft & Atölye</div>
+</footer>
+
+<div class="hud"><div style="color:var(--mut);font-size:10px;letter-spacing:2px;margin-bottom:4px">G54 · MM · İMLEÇ</div><div class="row"><span>X <b id="hx">0.000</b></span><span>Y <b id="hy">0.000</b></span><span>Z <b id="hz">0.000</b></span></div><div class="row" style="margin-top:4px;color:var(--mut)"><span>S <b id="hr" style="color:var(--cream)">0</b> RPM</span><span>F <b id="hf" style="color:var(--cream)">0</b></span></div><div class="row" style="margin-top:4px"><span>DURUM</span><span class="st" id="hs">BEKLEMEDE</span></div><div class="bar"><i id="hb"></i></div></div>
+
+<script>
+// ---------- products ----------
+const P=[["Merdivenli Tabure","Mutfak ve kütüphane için katlanır basamaklı tabure.",'<path d="M16 54V14h24v40M16 28h24M16 42h24M40 14l10 40"/>'],
+["Mutfak Seti","Ahşap kaşık, spatula ve ölçü kapları — lazer isimli.",'<path d="M20 52l10-26M30 26a6 9 0 1 1 0-1M40 52V20M36 20h8"/>'],
+["Konsol & Puf","Yemek odası konsolu ve ayak uzatma taburesi.",'<path d="M8 22h48M12 22v30M52 22v30M12 34h40"/>'],
+["Sürgülü Ahır Kapısı","Ray sistemli, ölçüye özel ahşap kapı.",'<path d="M6 10h52M14 10v46h30V10M14 10l30 46M44 10L14 56"/>'],
+["Baharat Rafı","Kavanoz düzenli, duvara monte raf.",'<path d="M10 12v44h44V12M10 28h44M10 44h44M18 20v8M28 20v8M38 20v8"/>'],
+["Gardırop & Dolap","Kayar kapılı gardırop ve dolap sistemleri.",'<path d="M12 8h40v48H12zM32 8v48M28 30v6M36 30v6"/>'],
+["Askılık / Portmanto","Raflı elbise askısı ve duvar askılıkları.",'<path d="M10 20h44M16 20v-6h32v6M20 20v10M32 20v10M44 20v10"/>'],
+["Lazer Pano","Kartal ve figür panolar, duvar dekoru.",'<path d="M32 14l6 12 14 2-10 9 3 14-13-7-13 7 3-14-10-9 14-2z"/>'],
+["Raf Sistemleri","Duvar rafı, kitaplık, modüler raflar.",'<path d="M8 16h48M8 32h48M8 48h48M14 16v6M50 32v6M14 48v6"/>'],
+["Havlu Askısı","Banyo için raflı havlu askısı.",'<path d="M10 14h44M14 14v8h36v-8M18 30h28v20H18z"/>']];
+document.getElementById('grid').innerHTML=P.map(p=>`<div class="prod"><svg viewBox="0 0 64 64">${p[2]}</svg><h3>${p[0]}</h3><p>${p[1]}</p></div>`).join('');
+const qf=document.getElementById('qf'),pv=document.getElementById('pv'),wa=document.getElementById('wa');
+function msg(){const f=new FormData(qf);const t=`Merhaba WM Craft 👋\nTeklif almak istiyorum.\n\n• Hizmet: ${f.get('h')}\n• Malzeme: ${f.get('m')}\n• Ölçü: ${f.get('o')||'-'} mm\n• Adet: ${f.get('a')||1}\n• Açıklama: ${f.get('d')||'-'}\n\n${f.get('n')||''}`;pv.textContent=t;wa.href='https://wa.me/905417645929?text='+encodeURIComponent(t);return t}
+qf.addEventListener('input',msg);msg();
+document.getElementById('cp').onclick=async e=>{try{await navigator.clipboard.writeText(msg());e.target.textContent='Kopyalandı ✓'}catch(_){e.target.textContent='Kopyalanamadı'}};
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {EXRLoader} from 'three/addons/loaders/EXRLoader.js';
+import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
+
+const cv=document.getElementById('c');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
+R.setPixelRatio(Math.min(devicePixelRatio,1.5));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
+const S=new THREE.Scene();S.background=new THREE.Color(0x0b0a09);S.fog=new THREE.FogExp2(0x0b0a09,.045);
+const pm=new THREE.PMREMGenerator(R);S.environment=pm.fromScene(new RoomEnvironment(),.04).texture;
+const C=new THREE.PerspectiveCamera(38,1,.05,120);
+const RT=new THREE.WebGLRenderTarget(innerWidth,innerHeight,{type:THREE.HalfFloatType,samples:4});
+const comp=new EffectComposer(R,RT);comp.addPass(new RenderPass(S,C));
+if(0)try{const {GTAOPass}=await import('three/addons/postprocessing/GTAOPass.js');const ao=new GTAOPass(S,C,innerWidth,innerHeight);ao.updateGtaoMaterial({radius:.35,distanceExponent:1.6,thickness:1,scale:1.2});ao.blendIntensity=.9;comp.addPass(ao)}catch(e){console.warn('AO off',e)}
+const bloom=new UnrealBloomPass(new THREE.Vector2(512,512),.5,.55,.92);comp.addPass(bloom);comp.addPass(new OutputPass());
+// film: grain + vignette + subtle chromatic aberration
+const film=new ShaderPass({uniforms:{tDiffuse:{value:null},uT:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+fragmentShader:`uniform sampler2D tDiffuse;uniform float uT;varying vec2 vUv;float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233))+uT)*43758.5453);}
+void main(){vec2 d=vUv-.5;float r=dot(d,d);vec2 o=d*r*.006;vec3 c=vec3(texture2D(tDiffuse,vUv+o).r,texture2D(tDiffuse,vUv).g,texture2D(tDiffuse,vUv-o).b);
+c*=1.-r*.9;c+= (h(vUv*1000.)-.5)*.035;c=mix(c,c*vec3(1.04,1.,.94),.6);gl_FragColor=vec4(c,1.);}`});comp.addPass(film);
+// real workshop HDRI (pmndrs/assets) for reflections + blurred backdrop
+try{const m=await import('https://cdn.jsdelivr.net/npm/@pmndrs/assets@1.7.0/hdri/workshop.exr.js');const bin=atob(m.default.split(',')[1]);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+ const ld=new EXRLoader();ld.setDataType(THREE.HalfFloatType);const td=ld.parse(u8.buffer);const ht=new THREE.DataTexture(td.data,td.width,td.height,td.format,td.type);
+ ht.mapping=THREE.EquirectangularReflectionMapping;ht.colorSpace=THREE.LinearSRGBColorSpace;ht.minFilter=ht.magFilter=THREE.LinearFilter;ht.generateMipmaps=false;ht.needsUpdate=true;
+ S.environment=pm.fromEquirectangular(ht).texture;S.background=ht;S.backgroundBlurriness=.45;S.backgroundIntensity=.16;S.environmentIntensity=.8;S.fog.density=.03;
+}catch(e){console.warn('HDRI fallback',e)}
+
+// ---------- canvas helpers ----------
+const cvs=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const ctex=(c,srgb)=>{const t=new THREE.CanvasTexture(c);if(srgb)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=R.capabilities.getMaxAnisotropy();return t};
+function noise(ctx,w,h,a,n){for(let i=0;i<n;i++){ctx.fillStyle=`rgba(${Math.random()<.5?0:255},${Math.random()<.5?0:255},${Math.random()<.5?0:255},${a*Math.random()})`;ctx.fillRect(Math.random()*w,Math.random()*h,1+Math.random()*2,1+Math.random()*2)}}
+
+// wood (oak) base + height base
+const TW=1024,TH=512,SC=2;
+const base=cvs(TW*SC,TH*SC),b=base.getContext('2d');b.scale(SC,SC);
+const hbase=cvs(TW*SC,TH*SC),hb=hbase.getContext('2d');hb.scale(SC,SC);
+{const g=b.createLinearGradient(0,0,0,TH);g.addColorStop(0,'#b88452');g.addColorStop(.35,'#c79363');g.addColorStop(.7,'#b27a49');g.addColorStop(1,'#c18c5b');b.fillStyle=g;b.fillRect(0,0,TW,TH);
+hb.fillStyle='#c8c8c8';hb.fillRect(0,0,TW,TH);
+for(let i=0;i<260;i++){const y0=Math.random()*TH,a=1+Math.random()*9,f=.002+Math.random()*.008,ph=Math.random()*6,dk=Math.random();
+ b.strokeStyle=`rgba(${70+dk*40|0},${40+dk*20|0},${18},${.05+Math.random()*.22})`;b.lineWidth=.4+Math.random()*2.6;
+ hb.strokeStyle=`rgba(150,150,150,${.15+Math.random()*.3})`;hb.lineWidth=b.lineWidth;
+ for(const c of [b,hb]){c.beginPath();for(let x=-10;x<=TW+10;x+=6){const y=y0+Math.sin(x*f+ph)*a+Math.sin(x*.027+ph*2)*1.2;x>-10?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}}
+// rays / flecks
+for(let i=0;i<500;i++){b.fillStyle=`rgba(230,190,140,${Math.random()*.18})`;b.fillRect(Math.random()*TW,Math.random()*TH,3+Math.random()*12,.8)}
+// knot
+for(const [kx,ky] of [[930,90],[600,470]]){for(let r=26;r>2;r-=3){b.strokeStyle=`rgba(70,38,16,${.25})`;b.lineWidth=1.4;b.beginPath();b.ellipse(kx,ky,r*1.8,r*.7,0,0,7);b.stroke()}b.fillStyle='#4a2a14';b.beginPath();b.ellipse(kx,ky,8,4,0,0,7);b.fill()}
+noise(b,TW,TH,.05,9000);}
+const tc=cvs(TW*SC,TH*SC),t=tc.getContext('2d'),hc=cvs(TW*SC,TH*SC),h=hc.getContext('2d');
+const tex=ctex(tc,true),htex=ctex(hc,false);
+
+// toolpaths (canvas coords; 1px = 0.78125 mm → slab 800 x 400 mm)
+function mk(subs){let L=0;const segs=[];subs.forEach(s=>{for(let i=1;i<s.length;i++){const l=Math.hypot(s[i][0]-s[i-1][0],s[i][1]-s[i-1][1]);segs.push({a:s[i-1],b:s[i],l,L0:L,start:i===1});L+=l}});return{segs,L}}
+const WM=mk([[[70,90],[140,300],[205,160],[270,300],[340,90]],[[385,300],[385,90],[450,210],[515,90],[515,300]]]);
+const ros=[],circ=[];for(let i=0;i<=900;i++){const th=i/900*Math.PI*2,r=122*Math.cos(4*th);ros.push([775+r*Math.cos(th),190+r*Math.sin(th)])}
+for(let i=0;i<=220;i++){const th=i/220*Math.PI*2;circ.push([775+138*Math.cos(th),190+138*Math.sin(th)])}
+const LZ=mk([circ,ros]);
+function trace(ctx,P,target){let tip=P.segs[0].a;ctx.beginPath();for(const s of P.segs){if(s.L0>=target)break;const k=Math.min(1,(target-s.L0)/s.l);const x=s.a[0]+(s.b[0]-s.a[0])*k,y=s.a[1]+(s.b[1]-s.a[1])*k;if(s.start)ctx.moveTo(s.a[0],s.a[1]);ctx.lineTo(x,y);tip=[x,y]}return tip}
+let seed=7;const rnd=()=>((seed=seed*16807%2147483647)/2147483647);
+function specks(P,w){const a=[];let d=0;for(const sg of P.segs){const n=Math.ceil(sg.l/1.5);for(let i=0;i<n;i++){const k=i/n,x=sg.a[0]+(sg.b[0]-sg.a[0])*k,y=sg.a[1]+(sg.b[1]-sg.a[1])*k,nx=-(sg.b[1]-sg.a[1])/sg.l,ny=(sg.b[0]-sg.a[0])/sg.l;
+ for(let j=0;j<3;j++){const side=rnd()<.5?-1:1,off=w*.5+Math.pow(rnd(),2.2)*w*1.8;a.push({d:sg.L0+k*sg.l,x:x+nx*off*side+(rnd()-.5)*6,y:y+ny*off*side+(rnd()-.5)*6,r:.5+rnd()*1.8,c:rnd()})}}}return a}
+const SP_WM=specks(WM,20),SP_LZ=specks(LZ,5);const SP_V=[];for(let i=0;i<4000;i++){const x=90+rnd()*850;SP_V.push({d:x,x:x+(rnd()-.5)*30,y:380+rnd()*110,r:.5+rnd()*1.6,c:rnd()})}
+function dustP(arr,lim,soot){for(const p of arr){if(p.d>lim)continue;t.fillStyle=soot?`rgba(40,22,10,${.15+p.c*.25})`:(p.c<.7?`rgba(240,205,160,${.35+p.c*.5})`:`rgba(200,150,100,.6)`);t.fillRect(p.x,p.y,p.r,p.r*(.6+p.c))}}
+let last='';
+function paint(cp,lp,vp){const sig=cp.toFixed(4)+lp.toFixed(4)+vp.toFixed(4);if(sig===last)return null;last=sig;
+t.setTransform(1,0,0,1,0,0);h.setTransform(1,0,0,1,0,0);t.drawImage(base,0,0);h.drawImage(hbase,0,0);t.setTransform(SC,0,0,SC,0,0);h.setTransform(SC,0,0,SC,0,0);
+for(const c of[t,h]){c.lineCap=c.lineJoin='round'}let tip=null;
+if(cp>0){const L=WM.L*cp;tip=trace(t,WM,L);t.strokeStyle='#3d2312';t.lineWidth=20;t.stroke();t.strokeStyle='#8a5a33';t.lineWidth=15;t.stroke();t.strokeStyle='#e0b383';t.lineWidth=11;t.stroke();
+ trace(h,WM,L);h.strokeStyle='#5a5a5a';h.lineWidth=20;h.stroke();h.strokeStyle='#202020';h.lineWidth=14;h.stroke();dustP(SP_WM,L,false);}
+if(lp>0){const L=LZ.L*lp;tip=trace(t,LZ,L);t.strokeStyle='rgba(70,35,12,.35)';t.lineWidth=7;t.stroke();t.strokeStyle='#160903';t.lineWidth=2.6;t.stroke();
+ trace(h,LZ,L);h.strokeStyle='#707070';h.lineWidth=3;h.stroke();dustP(SP_LZ,L,true);}
+if(vp>0){const F='900 92px "Big Shoulders Display", Impact, sans-serif';for(const c of[t,h]){c.save();c.beginPath();c.rect(0,360,90+vp*850,140);c.clip();c.font=F;c.textBaseline='middle'}
+ t.fillStyle='#2b170a';t.fillText('WOODMAN STUDIO',90,435);t.fillStyle='#b98251';t.fillText('WOODMAN STUDIO',92,437);t.lineWidth=1.2;t.strokeStyle='#f0c592';t.strokeText('WOODMAN STUDIO',93,438);
+ h.fillStyle='#8a8a8a';h.fillText('WOODMAN STUDIO',89,434);h.fillStyle='#202020';h.fillText('WOODMAN STUDIO',92,437);
+ t.restore();h.restore();dustP(SP_V,90+vp*850,false);tip=[90+vp*850,435+Math.sin(vp*90)*28]}
+tex.needsUpdate=htex.needsUpdate=true;return tip}
+paint(0,0,0);last='x';
+
+// ---------- materials ----------
+const M_={
+ alu:new THREE.MeshStandardMaterial({color:0xb9bcc2,metalness:1,roughness:.32}),
+ aluD:new THREE.MeshStandardMaterial({color:0x8d9097,metalness:1,roughness:.45}),
+ steel:new THREE.MeshStandardMaterial({color:0xd8dade,metalness:1,roughness:.18}),
+ frame:new THREE.MeshStandardMaterial({color:0x1d1f22,metalness:.4,roughness:.55}),
+ black:new THREE.MeshStandardMaterial({color:0x0f0f10,metalness:.3,roughness:.5}),
+ copper:new THREE.MeshStandardMaterial({color:0xc8834a,metalness:1,roughness:.28}),
+ orange:new THREE.MeshStandardMaterial({color:0xd8661c,metalness:.2,roughness:.45}),
+ mdf:new THREE.MeshStandardMaterial({color:0x8f7a5e,roughness:.95}),
+ plastic:new THREE.MeshStandardMaterial({color:0x111111,roughness:.7})};
+// thread texture for ball screws
+const th=cvs(64,256),thc=th.getContext('2d');thc.fillStyle='#ddd';thc.fillRect(0,0,64,256);for(let y=0;y<256;y+=8){thc.fillStyle='#555';thc.fillRect(0,y,64,3)}
+const thT=ctex(th,true);thT.wrapS=thT.wrapT=THREE.RepeatWrapping;thT.repeat.set(1,40);
+const screwM=new THREE.MeshStandardMaterial({map:thT,bumpMap:thT,bumpScale:2,metalness:1,roughness:.25});
+// extrusion groove texture
+const ex=cvs(256,64),exc=ex.getContext('2d');exc.fillStyle='#c4c7cc';exc.fillRect(0,0,256,64);exc.fillStyle='#55585e';[14,30,46].forEach(y=>exc.fillRect(0,y,256,4));
+const exT=ctex(ex,true);exT.wrapS=THREE.RepeatWrapping;exT.repeat.set(12,1);
+const extM=new THREE.MeshStandardMaterial({map:exT,bumpMap:exT,bumpScale:3,metalness:1,roughness:.35});
+// flute texture for end mill
+const fl=cvs(64,64),flc=fl.getContext('2d');flc.fillStyle='#e8e8e8';flc.fillRect(0,0,64,64);flc.fillStyle='#333';for(let i=-64;i<64;i+=16){flc.beginPath();flc.moveTo(i,64);flc.lineTo(i+6,64);flc.lineTo(i+70,0);flc.lineTo(i+64,0);flc.fill()}
+const flT=ctex(fl,true);flT.wrapS=flT.wrapT=THREE.RepeatWrapping;flT.repeat.set(2,2);
+const millM=new THREE.MeshStandardMaterial({map:flT,bumpMap:flT,bumpScale:2,metalness:1,roughness:.2});
+
+// ---------- weathering (Substance-style procedural masks) ----------
+const NOISE=`
+float wh(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+float wn(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+return mix(mix(mix(wh(i),wh(i+vec3(1,0,0)),f.x),mix(wh(i+vec3(0,1,0)),wh(i+vec3(1,1,0)),f.x),f.y),mix(mix(wh(i+vec3(0,0,1)),wh(i+vec3(1,0,1)),f.x),mix(wh(i+vec3(0,1,1)),wh(i+vec3(1,1,1)),f.x),f.y),f.z);}
+float fbm(vec3 p){float a=.5,s=0.;for(int i=0;i<5;i++){s+=a*wn(p);p*=2.03;a*=.5;}return s;}`;
+function weather(mat,o){o=Object.assign({dust:.6,rust:0,patina:0,soot:0,sootC:new THREE.Vector3(0,.3,0),scale:6},o);
+ mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uDust:{value:o.dust},uRust:{value:o.rust},uPat:{value:o.patina},uSoot:{value:o.soot},uSc:{value:o.scale}});
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;varying vec3 vWN;varying vec3 vOP;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvWP=(modelMatrix*vec4(transformed,1.)).xyz;vOP=transformed;vWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;varying vec3 vWN;varying vec3 vOP;uniform float uDust,uRust,uPat,uSoot,uSc;'+NOISE)
+   .replace('#include <clipping_planes_fragment>','#include <clipping_planes_fragment>\nfloat wD=0.,wR=0.,wS=0.;')
+   .replace('#include <color_fragment>',`#include <color_fragment>
+   vec3 P=vOP*uSc;float n=fbm(P),n2=fbm(P*3.7+7.),grit=wh(floor(P*60.));
+   float up=smoothstep(.15,.95,vWN.y);
+   wD=clamp(uDust*(up*(.55+.9*n)+.25*smoothstep(.55,.8,n2))-.15,0.,1.);wD=max(wD,step(.985,grit)*uDust);
+   wR=uRust*smoothstep(.58,.78,fbm(P*1.6+3.))*(1.-up*.5);
+   float pat=uPat*smoothstep(.5,.75,n2);
+   wS=uSoot*(1.-smoothstep(.0,.55,length(vOP-vec3(0.,-.4,0.))))*(.6+.6*n);
+   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.2,.08)*(.6+.5*n2),wR);
+   diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*.8+vec3(.08,.09,.08),pat);
+   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.05,.04,.035),clamp(wS,0.,1.));
+   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.78,.66,.5)*(.8+.3*grit),wD);
+   diffuseColor.rgb*=.9+.2*n;`)
+   .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=clamp(roughnessFactor+(.18*(fbm(vOP*uSc*9.)-.5))+wD*.8+wR*.6+wS*.5,0.04,1.);')
+   .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.-clamp(wD*1.1+wR*.9+wS*.6,0.,1.);');};
+ mat.customProgramCacheKey=()=>JSON.stringify(o);return mat}
+weather(M_.alu,{dust:.55,patina:.5,scale:5});weather(M_.aluD,{dust:.7,patina:.6,scale:5});weather(M_.steel,{dust:.5,rust:.45,scale:7});
+weather(M_.frame,{dust:.45,rust:.25,scale:3});weather(M_.black,{dust:.55,scale:6});weather(M_.copper,{dust:.4,patina:.7,rust:.2,scale:8});
+weather(M_.plastic,{dust:.6,scale:5});weather(M_.orange,{dust:.5,scale:6});weather(screwM,{dust:.35,rust:.35,scale:8});weather(extM,{dust:.6,patina:.4,scale:4});
+const yel=weather(new THREE.MeshStandardMaterial({color:0xf5b800,metalness:.25,roughness:.38,envMapIntensity:1.1}),{dust:.6,rust:.12,scale:4});
+const yelExt=weather(new THREE.MeshStandardMaterial({map:exT,bumpMap:exT,bumpScale:3,color:0xffc61a,metalness:.3,roughness:.4}),{dust:.55,rust:.1,scale:4});
+const box=(w,hh,d,m,x=0,y=0,z=0,p,r=0)=>{const g=r?new RoundedBoxGeometry(w,hh,d,3,r):new THREE.BoxGeometry(w,hh,d);const ms=new THREE.Mesh(g,m);ms.position.set(x,y,z);ms.castShadow=ms.receiveShadow=true;(p||S).add(ms);return ms};
+const cyl=(rt,rb,hh,m,x=0,y=0,z=0,p,seg=32,rx=0,rz=0)=>{const ms=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,hh,seg),m);ms.position.set(x,y,z);ms.rotation.set(rx,0,rz);ms.castShadow=ms.receiveShadow=true;(p||S).add(ms);return ms};
+
+// ---------- floor & shop ----------
+const fc=cvs(512,512),fx=fc.getContext('2d');fx.fillStyle='#3a3836';fx.fillRect(0,0,512,512);noise(fx,512,512,.25,40000);
+for(let i=0;i<30;i++){fx.fillStyle=`rgba(0,0,0,${Math.random()*.15})`;fx.beginPath();fx.arc(Math.random()*512,Math.random()*512,10+Math.random()*60,0,7);fx.fill()}
+const fT=ctex(fc,true);fT.wrapS=fT.wrapT=THREE.RepeatWrapping;fT.repeat.set(10,10);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(120,120),new THREE.MeshStandardMaterial({map:fT,roughness:.85,metalness:0,envMapIntensity:.3}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.4;floor.receiveShadow=true;S.add(floor);
+// overhead tube lights
+[-3,3].forEach(z=>{const l=new THREE.Mesh(new THREE.BoxGeometry(6,.06,.12),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xfff1dc,emissiveIntensity:4}));l.position.set(0,6.5,z);S.add(l)});
+S.add(new THREE.HemisphereLight(0xffe7cc,0x14100c,.35));
+const key=new THREE.SpotLight(0xffe2bf,420,0,.62,.55,2);key.position.set(3,9,5);key.target.position.set(0,0,0);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0002;key.shadow.normalBias=.02;S.add(key,key.target);
+const rim=new THREE.PointLight(0xd88a4a,60,25,2);rim.position.set(-7,3,-5);S.add(rim);
+const fill=new THREE.DirectionalLight(0x9fb4ff,.25);fill.position.set(-5,4,8);S.add(fill);
+
+// ---------- CNC machine (1 unit = 100 mm) ----------
+const M=new THREE.Group();S.add(M);
+// stand
+[[-4.7,-2.6],[4.7,-2.6],[-4.7,2.6],[4.7,2.6]].forEach(([x,z])=>box(.32,1.8,.32,M_.frame,x,-1.5,z,M));
+box(10,.3,.3,M_.frame,0,-2.1,2.6,M);box(10,.3,.3,M_.frame,0,-2.1,-2.6,M);
+[-4.9,4.9].forEach(x=>box(.45,.55,6.4,M_.frame,x,-.55,0,M));
+[-2.6,0,2.6].forEach(z=>box(9.4,.35,.35,M_.frame,0,-.65,z,M));
+// t-slot bed
+for(let i=0;i<20;i++){const x=-4.275+i*.45;box(.42,.14,5.6,M_.aluD,x,-.4,0,M)}
+box(8.9,.12,4.9,weather(M_.mdf,{dust:1.2,scale:3}),0,-.27,0,M);
+// workpiece
+const sideM=new THREE.MeshStandardMaterial({map:ctex(base,true),roughness:.75});
+const topM=new THREE.MeshStandardMaterial({map:tex,bumpMap:htex,bumpScale:6,roughness:.72,envMapIntensity:.6});
+const hidden=new THREE.MeshBasicMaterial({visible:false});
+const slab=new THREE.Mesh(new THREE.BoxGeometry(8,.4,4),[sideM,sideM,hidden,sideM,sideM,sideM]);slab.position.y=.05;slab.castShadow=slab.receiveShadow=true;M.add(slab);
+// real geometry: 640x320 grid displaced by the cut-depth map (grooves are actually carved, 8 mm deep)
+topM.displacementMap=htex;topM.displacementScale=.08;topM.displacementBias=-.08*(200/255);
+const topG=new THREE.PlaneGeometry(8,4,640,320);topG.rotateX(-Math.PI/2);
+const wtop=new THREE.Mesh(topG,topM);wtop.position.y=.25;wtop.receiveShadow=true;M.add(wtop);
+// clamps
+[[-4.15,-1.6],[-4.15,1.6],[4.15,-1.6],[4.15,1.6]].forEach(([x,z])=>{box(.5,.08,.25,M_.steel,x,.27,z,M);cyl(.05,.05,.5,M_.steel,x+(x<0?-.1:.1),.05,z,M,12);cyl(.09,.09,.06,M_.black,x+(x<0?-.1:.1),.33,z,M,6)});
+// Y rails & screws
+[-4.9,4.9].forEach(x=>{box(.22,.14,6.3,M_.steel,x,-.2,0,M);cyl(.07,.07,6.2,screwM,x+(x<0?.3:-.3),-.4,0,M,20,Math.PI/2);
+ box(.55,.55,.55,M_.black,x+(x<0?.3:-.3),-.4,-3.45,M,.04);cyl(.24,.24,.06,M_.alu,x+(x<0?.3:-.3),-.4,-3.15,M,24,Math.PI/2)});
+// gantry
+const G=new THREE.Group();M.add(G);
+[-4.95,4.95].forEach(x=>{box(.16,2.5,1.3,yel,x,.95,0,G,.03);box(.4,.22,.55,M_.steel,x,-.05,-.3,G);box(.4,.22,.55,M_.steel,x,-.05,.3,G);});
+const beam=box(9.9,.95,.5,yelExt,0,1.55,-.05,G);
+[1.22,1.86].forEach(y=>box(9.6,.1,.08,M_.steel,0,y,.24,G));
+cyl(.06,.06,9.6,screwM,0,1.54,.28,G,20,0,Math.PI/2);
+const xm=box(.55,.55,.55,M_.black,5.35,1.54,.1,G,.04);cyl(.24,.24,.06,M_.alu,5.05,1.54,.1,G,24,0,Math.PI/2);
+
+// drag chain
+const links=[];
+// X carriage
+const X=new THREE.Group();G.add(X);
+box(1.0,1.15,.1,yel,0,1.54,.36,X,.03);[1.22,1.86].forEach(y=>{box(.32,.16,.14,M_.steel,-.28,y,.3,X);box(.32,.16,.14,M_.steel,.28,y,.3,X)});
+box(.5,.5,.5,M_.black,0,2.45,.62,X,.04);cyl(.22,.22,.05,M_.alu,0,2.18,.62,X,24);
+cyl(.05,.05,1.3,screwM,0,1.5,.62,X,16);
+// Z slide (head)
+const Z=new THREE.Group();X.add(Z);
+box(.75,1.6,.08,yel,0,1.45,.48,Z,.025);
+// spindle 2.2kW water-cooled
+const SP=new THREE.Group();SP.position.set(-.0,0,.82);Z.add(SP);
+box(.7,.3,.4,M_.alu,0,1.55,-.12,SP,.04);box(.7,.3,.4,M_.alu,0,.95,-.12,SP,.04);
+const body=cyl(.25,.25,1.1,weather(new THREE.MeshStandardMaterial({color:0xe6e8ec,metalness:1,roughness:.2}),{dust:.75,patina:.35,rust:.08,scale:7}),0,1.27,0,SP,48);
+cyl(.26,.26,.08,M_.black,0,1.86,0,SP,48);cyl(.12,.12,.12,M_.black,0,1.96,0,SP,24);
+cyl(.2,.25,.06,M_.alu,0,.69,0,SP,48);
+const rot=new THREE.Group();SP.add(rot);
+cyl(.13,.13,.12,M_.steel,0,.6,0,rot,6);cyl(.09,.11,.06,M_.steel,0,.52,0,rot,24);
+cyl(.032,.032,.38,millM,0,.43,0,rot,16);
+// hoses
+const hoseM=new THREE.MeshPhysicalMaterial({color:0x2a6cff,transmission:.4,roughness:.25,thickness:.05,metalness:0});
+[[-.12],[.12]].forEach(([dx],i)=>{cyl(.035,.035,.12,M_.copper,dx,1.75,.25,SP,12,Math.PI/2);
+ const cur=new THREE.CatmullRomCurve3([new THREE.Vector3(dx,1.75,.3),new THREE.Vector3(dx,2.0,.55),new THREE.Vector3(dx*2,2.7,.4),new THREE.Vector3(dx*3,3.1,-.2)]);
+ const hm=new THREE.Mesh(new THREE.TubeGeometry(cur,40,.03,10),hoseM);hm.castShadow=true;SP.add(hm)});
+// dust shoe brush
+const brush=new THREE.Mesh(new THREE.CylinderGeometry(.34,.36,.22,40,1,true),new THREE.MeshStandardMaterial({color:0x111111,transparent:true,opacity:.28,roughness:1,side:THREE.DoubleSide,depthWrite:false}));brush.position.y=.36;SP.add(brush);
+cyl(.36,.36,.06,weather(new THREE.MeshStandardMaterial({color:0x151515,roughness:.6}),{dust:1,scale:9}),0,.5,0,SP,40);
+// laser module (40W diode)
+const LM=new THREE.Group();LM.position.set(.62,0,.6);Z.add(LM);
+const lmBlack=weather(new THREE.MeshStandardMaterial({color:0x111112,metalness:.5,roughness:.45}),{dust:.6,soot:1.2,scale:7});
+const lmFin=weather(new THREE.MeshStandardMaterial({color:0x8d9097,metalness:1,roughness:.4}),{dust:.85,patina:.6,soot:.8,scale:9});
+box(.42,.62,.42,lmBlack,0,1.25,0,LM,.03);for(let i=0;i<7;i++)box(.42,.02,.46,lmFin,0,1.0+i*.08,0,LM);
+cyl(.15,.15,.04,M_.plastic,0,1.58,.0,LM,24);box(.2,.04,.2,M_.orange,0,1.6,0,LM);
+cyl(.045,.08,.22,weather(new THREE.MeshStandardMaterial({color:0xc8834a,metalness:1,roughness:.3}),{soot:2.2,patina:.6,dust:.3,scale:12}),0,.85,0,LM,24);
+const beamM=new THREE.MeshBasicMaterial({color:new THREE.Color(9,1.2,.4),toneMapped:false,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false});
+const beamL=new THREE.Mesh(new THREE.CylinderGeometry(.008,.014,1,8,1,true),beamM);LM.add(beamL);
+const spark=new THREE.Mesh(new THREE.SphereGeometry(.035,12,12),new THREE.MeshBasicMaterial({color:new THREE.Color(12,6,2),toneMapped:false}));LM.add(spark);
+const glow=new THREE.PointLight(0xff4a1a,0,3,2);LM.add(glow);
+const LASER_DX=.62,LASER_DZ=-.22; // laser vs spindle offset
+
+// cursor marker
+const ring=new THREE.Mesh(new THREE.RingGeometry(.07,.09,40),new THREE.MeshBasicMaterial({color:new THREE.Color(3,.5,.2),toneMapped:false,transparent:true,opacity:.9,depthWrite:false}));ring.rotation.x=-Math.PI/2;M.add(ring);
+const cross=new THREE.Group();[0,Math.PI/2].forEach(r=>{const l=new THREE.Mesh(new THREE.PlaneGeometry(.4,.008),ring.material);l.rotation.z=r;cross.add(l)});cross.rotation.x=-Math.PI/2;M.add(cross);
+
+// ---------- particles ----------
+const NCH=3000,chipGeo=new THREE.TorusGeometry(.014,.0045,4,10,Math.PI*1.4);
+const chipMat=new THREE.MeshStandardMaterial({color:0xe7bf8c,roughness:.85,side:THREE.DoubleSide});
+const chipsIM=new THREE.InstancedMesh(chipGeo,chipMat,NCH);chipsIM.castShadow=true;chipsIM.receiveShadow=true;chipsIM.instanceMatrix.setUsage(THREE.DynamicDrawUsage);M.add(chipsIM);
+const CH=[...Array(NCH)].map(()=>({p:new THREE.Vector3(0,-99,0),v:new THREE.Vector3(),r:new THREE.Euler(),w:new THREE.Vector3(),s:1,at:-1,rest:false,on:false}));
+const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_sc=new THREE.Vector3();let ci=0,lastTip=new THREE.Vector3();
+const tint=new THREE.Color();for(let i=0;i<NCH;i++){tint.setHSL(.08,.45+Math.random()*.2,.6+Math.random()*.2);chipsIM.setColorAt(i,tint)}
+const sc=cvs(64,64),sx=sc.getContext('2d');const rg=sx.createRadialGradient(32,32,0,32,32,32);rg.addColorStop(0,'rgba(200,200,200,.55)');rg.addColorStop(1,'rgba(200,200,200,0)');sx.fillStyle=rg;sx.fillRect(0,0,64,64);
+const smT=ctex(sc,true);const smokes=[];for(let i=0;i<40;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:smT,transparent:true,opacity:0,depthWrite:false}));s.userData={life:0};M.add(s);smokes.push(s)}let si=0;
+const ND=700,dG=new THREE.BufferGeometry(),dP=new Float32Array(ND*3);for(let i=0;i<ND;i++){dP[i*3]=(Math.random()-.5)*16;dP[i*3+1]=-2+Math.random()*8;dP[i*3+2]=(Math.random()-.5)*12}
+dG.setAttribute('position',new THREE.BufferAttribute(dP,3));
+const dust=new THREE.Points(dG,new THREE.PointsMaterial({color:0xffe0b8,size:.018,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}));S.add(dust);
+
+// ---------- garden bench ----------
+const B=new THREE.Group();B.position.set(0,-2.4,0);B.scale.setScalar(1.15);S.add(B);B.visible=false;
+const bw=new THREE.MeshPhysicalMaterial({map:ctex(base,true),roughness:.55,clearcoat:.35,clearcoatRoughness:.4,color:0xc58a5a});
+const parts=[];function part(w,hh,d,x,y,z,rx,m){const ms=box(w,hh,d,m||bw,0,0,0,B,Math.min(w,hh,d)*.25);parts.push({ms,tp:new THREE.Vector3(x,y,z),tr:rx||0,sp:new THREE.Vector3((Math.random()-.5)*8,5+Math.random()*4,(Math.random()-.5)*6),sr:new THREE.Euler(Math.random()*3,Math.random()*3,Math.random()*3)})}
+[-1.9,1.9].forEach(x=>{part(.14,1.0,.14,x,.5,.6);part(.14,1.0,.14,x,.5,-.55);part(.14,1.9,.14,x,.95,-.75,-.18);part(.16,.1,1.6,x,1.05,0);part(.12,.12,1.4,x,.25,0,0,M_.frame)});
+for(let i=0;i<5;i++)part(4.1,.08,.24,0,.95,.6-i*.28);
+for(let i=0;i<4;i++)part(4.1,.22,.07,0,1.25+i*.3,-.78-i*.055,-.18);
+part(4,.12,.12,0,.3,0,0,M_.frame);
+
+// ---------- interaction ----------
+const K=[[6.2,4.4,8.8,0,.3,0],[-1.0,2.3,3.4,-1.7,.25,-.4],[4.0,2.4,2.9,1.9,.35,-.6],[0,1.9,4.2,0,.2,1.2],[3.8,.6,6.8,0,-1.3,0],[-4.6,1.6,7.6,0,-1.3,0]];
+const secs=[...document.querySelectorAll('[data-s]')];
+const ss=x=>x<=0?0:x>=1?1:x*x*(3-2*x),cl=x=>Math.max(0,Math.min(1,x));
+const mouse=new THREE.Vector2(),ray=new THREE.Raycaster(),plane=new THREE.Plane(new THREE.Vector3(0,1,0),-.25),hit=new THREE.Vector3();let mx=0,my=0,hasM=false;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;mouse.set(mx*2,-my*2);hasM=true});
+function size(){const w=innerWidth,hh=innerHeight;R.setSize(w,hh,false);comp.setSize(w,hh);C.aspect=w/hh;C.fov=w<820?52:38;C.updateProjectionMatrix()}addEventListener('resize',size);size();
+const $=id=>document.getElementById(id);const HX=$('hx'),HY=$('hy'),HZ=$('hz'),HS=$('hs'),HB=$('hb'),HR=$('hr'),HF=$('hf');
+const cam=new THREE.Vector3(...K[0].slice(0,3)),look=new THREE.Vector3(0,.3,0),tP=new THREE.Vector3(),tL=new THREE.Vector3();
+const tool=new THREE.Vector3();let curTip=[512,256],rpm=0;
+function stage(){const mid=innerHeight*.5;let s=0;for(let i=0;i<secs.length;i++){const r=secs[i].getBoundingClientRect();if(r.top<=mid)s=i+cl((mid-r.top)/r.height)}return Math.min(s,5)}
+const clock=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05),tt=clock.elapsedTime,s=stage();
+ const cp=ss(cl((s-.75)/1.05)),lp=ss(cl((s-1.8)/1.05)),vp=ss(cl((s-2.8)/1.0)),bp=cl((s-3.6)/1.1);
+ const tip=paint(cp,lp,vp);if(tip)curTip=tip;
+ let mode='BEKLEMEDE',cut=false,isL=s>1.75&&s<2.9;
+ if(cp>0&&cp<1){mode='FREZE · G01';cut=true}else if(lp>0&&lp<1){mode='LAZER · M03';cut=true}else if(vp>0&&vp<1){mode='V-GRAVÜR · G01'}if(vp>0&&vp<1)cut=true;
+ if(bp>0&&bp<1)mode='MONTAJ';else if(s>=4.7)mode='TAMAMLANDI';
+ // mouse raycast onto workpiece plane (machine space)
+ ray.setFromCamera(mouse,C);const on=hasM&&ray.ray.intersectPlane(plane,hit);
+ const lx=on?hit.x-M.position.x:0,lz=on?hit.z:0;const inside=on&&Math.abs(lx)<4&&Math.abs(lz)<2;
+ ring.visible=cross.visible=inside&&bp<.05;ring.position.set(lx,.262,lz);cross.position.copy(ring.position);ring.scale.setScalar(1+Math.sin(tt*6)*.12);
+ // tool target
+ let tx,tz;if(cut){tx=(curTip[0]/TW-.5)*8;tz=(curTip[1]/TH-.5)*4}else if(inside){tx=lx;tz=lz}else{tx=Math.sin(tt*.5)*2;tz=Math.cos(tt*.35)*.8}
+ if(isL){tx-=LASER_DX;tz-=LASER_DZ}
+ const k=cut?.35:.06;tool.x+=(tx-tool.x)*k;tool.z+=(tz-tool.z)*k;
+ G.position.z=tool.z-.82;X.position.x=tool.x;
+ const zt=(cut&&!isL)?0:.35;Z.position.y+=(zt-Z.position.y)*.12;
+ rpm+=(((cut&&!isL)?18000:(s<.75?6000:0))-rpm)*.05;rot.rotation.y+=rpm/60*dt*Math.PI*2*.02;
+ // drag chain
+ const x0=-4.6,cx=tool.x,mid=(x0+cx)/2,L1=mid-x0;links.forEach((l,i)=>{const u=i/(links.length-1);const total=2*Math.max(L1,0)+.47;let d=u*total,px,py;
+  if(d<L1){px=x0+d;py=2.08}else if(d<L1+.47){const a=(d-L1)/.47*Math.PI;px=mid+Math.sin(a)*.15;py=2.23-Math.cos(a)*.15}else{px=mid-(d-L1-.47);py=2.38}
+  l.position.set(px,py,-.05);l.rotation.z=(d>=L1&&d<L1+.47)?-(d-L1)/.47*Math.PI:0});
+ // laser
+ const lon=cut&&isL;beamL.visible=spark.visible=lon;glow.intensity=lon?3+Math.random()*2:0;
+ const ny=.74,sy=.25-Z.position.y;beamL.scale.y=ny-sy;beamL.position.y=(ny+sy)/2;spark.position.y=sy+.01;glow.position.y=sy+.12;spark.scale.setScalar(.8+Math.random()*.6);
+ const twx=tool.x+(isL?LASER_DX:0),twz=tool.z+(isL?LASER_DZ:0);
+ // chips: spawn proportional to distance travelled while milling; each chip remembers the scroll position it was cut at
+ const tipW=new THREE.Vector3((curTip[0]/TW-.5)*8,.25,(curTip[1]/TH-.5)*4);
+ if(cut&&!isL){const dist=tipW.distanceTo(lastTip),n=Math.min(40,Math.floor(dist/.006));
+  for(let j=0;j<n;j++){const c=CH[ci++%NCH];const k=j/Math.max(n,1);c.p.lerpVectors(lastTip,tipW,k);c.p.y=.27;const a=Math.random()*6.28,sp=.6+Math.random()*1.6;
+   c.v.set(Math.cos(a)*sp,1.2+Math.random()*1.8,Math.sin(a)*sp);c.w.set(Math.random()*20,Math.random()*20,Math.random()*20);c.r.set(Math.random()*6,Math.random()*6,Math.random()*6);c.s=.6+Math.random()*1.2;c.at=s;c.rest=false;c.on=true}}
+ lastTip.copy(tipW);
+ for(let i=0;i<NCH;i++){const c=CH[i];if(!c.on)continue;if(s<c.at-.002){c.on=false;_m.makeScale(0,0,0);chipsIM.setMatrixAt(i,_m);continue}
+  if(!c.rest){c.v.y-=9.8*dt*.6;c.p.addScaledVector(c.v,dt*.35);c.r.x+=c.w.x*dt;c.r.y+=c.w.y*dt;c.r.z+=c.w.z*dt;
+   if(c.p.y<=.258){c.p.y=.256+Math.random()*.004;c.rest=true;c.r.x=Math.PI/2+(Math.random()-.5)*.6}
+   if(Math.abs(c.p.x)>4||Math.abs(c.p.z)>2){if(c.p.y<.25)c.p.y=Math.max(c.p.y,-.2)}}
+  _q.setFromEuler(c.r);_sc.setScalar(c.s);_m.compose(c.p,_q,_sc);chipsIM.setMatrixAt(i,_m)}
+ chipsIM.instanceMatrix.needsUpdate=true;
+ if(lon&&Math.random()<.6){const sp=smokes[si++%smokes.length];sp.position.set(twx,.3,twz);sp.userData.life=1;sp.scale.setScalar(.08)}
+ smokes.forEach(sp=>{if(sp.userData.life<=0)return;sp.userData.life-=dt*.6;sp.position.y+=dt*.35;sp.position.x+=Math.sin(tt*2+sp.id)*.002;sp.scale.multiplyScalar(1+dt*1.2);sp.material.opacity=Math.max(0,sp.userData.life)*.35});
+ for(let i=0;i<ND;i++){dP[i*3+1]+=Math.sin(tt*.3+i)*.0006;dP[i*3]+=.0008}dG.attributes.position.needsUpdate=true;
+ // bench transition
+ const be=ss(bp);M.position.x=-be*18;B.visible=bp>0;
+ parts.forEach((p,i)=>{const q=ss(cl(bp*1.7-i*.035));p.ms.position.lerpVectors(p.sp.clone().add(p.tp),p.tp,q);p.ms.rotation.set(p.sr.x*(1-q)+p.tr*q,p.sr.y*(1-q),p.sr.z*(1-q))});
+ if(s>4.5)B.rotation.y=Math.sin(tt*.25)*.35;
+ // camera
+ const i0=Math.floor(s),i1=Math.min(5,i0+1),f=ss(s-i0),a=K[i0],c=K[i1];
+ tP.set(a[0]+(c[0]-a[0])*f+mx*.6,a[1]+(c[1]-a[1])*f-my*.35,a[2]+(c[2]-a[2])*f);tL.set(a[3]+(c[3]-a[3])*f,a[4]+(c[4]-a[4])*f,a[5]+(c[5]-a[5])*f);
+ cam.lerp(tP,.07);look.lerp(tL,.07);C.position.copy(cam);C.lookAt(look);
+ // HUD — mouse coordinates in mm (origin = workpiece front-left corner, 800 x 400 mm)
+ if(on){HX.textContent=((lx+4)*100).toFixed(3);HY.textContent=((2-lz)*100).toFixed(3)}
+ HZ.textContent=(cut&&!isL?-3.0:(Z.position.y*100)).toFixed(3);HR.textContent=Math.round(rpm);HF.textContent=cut?(isL?3000:2400):0;HS.textContent=mode;HB.style.width=(Math.min(1,s/5)*100)+'%';
+ film.uniforms.uT.value=tt%10;comp.render()}
+document.fonts&&document.fonts.ready.then(()=>{last='x'});
+loop();
+</script>
+</body>
+</html>
