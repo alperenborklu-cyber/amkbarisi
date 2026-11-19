@@ -202,7 +202,10 @@ import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
 
 const cv=document.getElementById('c');
 const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
-let PR=Math.min(devicePixelRatio,1.25);R.setPixelRatio(PR);R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+// detect software rendering (no GPU / hardware acceleration off) → LITE mode
+const _gl=R.getContext(),_dbg=_gl.getExtension('WEBGL_debug_renderer_info');const GPU=_dbg?String(_gl.getParameter(_dbg.UNMASKED_RENDERER_WEBGL)):'';
+let LITE=/SwiftShader|Basic Render|llvmpipe|Software|softpipe/i.test(GPU)||innerWidth<700;let usePost=!LITE;
+let PR=LITE?Math.min(devicePixelRatio,.6):Math.min(devicePixelRatio,1.25);R.setPixelRatio(PR);if(LITE)R.shadowMap.enabled=false;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.05;
 const S=new THREE.Scene();S.background=new THREE.Color(0x0b0a09);S.fog=new THREE.FogExp2(0x0b0a09,.045);
 const pm=new THREE.PMREMGenerator(R);S.environment=pm.fromScene(new RoomEnvironment(),.04).texture;
@@ -217,7 +220,7 @@ fragmentShader:`uniform sampler2D tDiffuse;uniform float uT;varying vec2 vUv;flo
 void main(){vec2 d=vUv-.5;float r=dot(d,d);vec2 o=d*r*.006;vec3 c=vec3(texture2D(tDiffuse,vUv+o).r,texture2D(tDiffuse,vUv).g,texture2D(tDiffuse,vUv-o).b);
 c*=1.-r*.9;c+= (h(vUv*1000.)-.5)*.035;c=mix(c,c*vec3(1.04,1.,.94),.6);gl_FragColor=vec4(c,1.);}`});comp.addPass(film);
 // real workshop HDRI (pmndrs/assets) for reflections + blurred backdrop
-try{const m=await import('https://cdn.jsdelivr.net/npm/@pmndrs/assets@1.7.0/hdri/workshop.exr.js');const bin=atob(m.default.split(',')[1]);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+if(!LITE)try{const m=await import('https://cdn.jsdelivr.net/npm/@pmndrs/assets@1.7.0/hdri/workshop.exr.js');const bin=atob(m.default.split(',')[1]);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
  const ld=new EXRLoader();ld.setDataType(THREE.HalfFloatType);const td=ld.parse(u8.buffer);const ht=new THREE.DataTexture(td.data,td.width,td.height,td.format,td.type);
  ht.mapping=THREE.EquirectangularReflectionMapping;ht.colorSpace=THREE.LinearSRGBColorSpace;ht.minFilter=ht.magFilter=THREE.LinearFilter;ht.generateMipmaps=false;ht.needsUpdate=true;
  S.environment=pm.fromEquirectangular(ht).texture;S.background=ht;S.backgroundBlurriness=.45;S.backgroundIntensity=.16;S.environmentIntensity=.8;S.fog.density=.03;
@@ -325,7 +328,7 @@ float wh(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y
 float wn(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
 return mix(mix(mix(wh(i),wh(i+vec3(1,0,0)),f.x),mix(wh(i+vec3(0,1,0)),wh(i+vec3(1,1,0)),f.x),f.y),mix(mix(wh(i+vec3(0,0,1)),wh(i+vec3(1,0,1)),f.x),mix(wh(i+vec3(0,1,1)),wh(i+vec3(1,1,1)),f.x),f.y),f.z);}
 float fbm(vec3 p){float a=.5,s=0.;for(int i=0;i<3;i++){s+=a*wn(p);p*=2.03;a*=.5;}return s;}`;
-function weather(mat,o){o=Object.assign({dust:.6,rust:0,patina:0,soot:0,sootC:new THREE.Vector3(0,.3,0),scale:6},o);
+function weather(mat,o){if(LITE)return mat;o=Object.assign({dust:.6,rust:0,patina:0,soot:0,sootC:new THREE.Vector3(0,.3,0),scale:6},o);
  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uDust:{value:o.dust},uRust:{value:o.rust},uPat:{value:o.patina},uSoot:{value:o.soot},uSc:{value:o.scale}});
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;varying vec3 vWN;varying vec3 vOP;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvWP=(modelMatrix*vec4(transformed,1.)).xyz;vOP=transformed;vWN=normalize(mat3(modelMatrix)*objectNormal);');
@@ -383,7 +386,7 @@ const hidden=new THREE.MeshBasicMaterial({visible:false});
 const slab=new THREE.Mesh(new THREE.BoxGeometry(8,.4,4),[sideM,sideM,hidden,sideM,sideM,sideM]);slab.position.y=.05;slab.castShadow=slab.receiveShadow=true;M.add(slab);
 // real geometry: 640x320 grid displaced by the cut-depth map (grooves are actually carved, 8 mm deep)
 topM.displacementMap=htex;topM.displacementScale=.08;topM.displacementBias=-.08*(200/255);
-const topG=new THREE.PlaneGeometry(8,4,384,192);topG.rotateX(-Math.PI/2);
+const topG=new THREE.PlaneGeometry(8,4,LITE?160:384,LITE?80:192);topG.rotateX(-Math.PI/2);
 const wtop=new THREE.Mesh(topG,topM);wtop.position.y=.25;wtop.receiveShadow=true;M.add(wtop);
 // clamps
 [[-4.15,-1.6],[-4.15,1.6],[4.15,-1.6],[4.15,1.6]].forEach(([x,z])=>{box(.5,.08,.25,M_.steel,x,.27,z,M);cyl(.05,.05,.5,M_.steel,x+(x<0?-.1:.1),.05,z,M,12);cyl(.09,.09,.06,M_.black,x+(x<0?-.1:.1),.33,z,M,6)});
@@ -443,7 +446,7 @@ const ring=new THREE.Mesh(new THREE.RingGeometry(.07,.09,40),new THREE.MeshBasic
 const cross=new THREE.Group();[0,Math.PI/2].forEach(r=>{const l=new THREE.Mesh(new THREE.PlaneGeometry(.4,.008),ring.material);l.rotation.z=r;cross.add(l)});cross.rotation.x=-Math.PI/2;M.add(cross);
 
 // ---------- particles ----------
-const NCH=1500,chipGeo=new THREE.TorusGeometry(.014,.0045,4,10,Math.PI*1.4);
+const NCH=LITE?400:1500,chipGeo=new THREE.TorusGeometry(.014,.0045,4,10,Math.PI*1.4);
 const chipMat=new THREE.MeshStandardMaterial({color:0xe7bf8c,roughness:.85,side:THREE.DoubleSide});
 const chipsIM=new THREE.InstancedMesh(chipGeo,chipMat,NCH);chipsIM.castShadow=true;chipsIM.receiveShadow=true;chipsIM.instanceMatrix.setUsage(THREE.DynamicDrawUsage);M.add(chipsIM);
 const CH=[...Array(NCH)].map(()=>({p:new THREE.Vector3(0,-99,0),v:new THREE.Vector3(),r:new THREE.Euler(),w:new THREE.Vector3(),s:1,at:-1,rest:false,on:false}));
@@ -528,8 +531,8 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
  // HUD — mouse coordinates in mm (origin = workpiece front-left corner, 800 x 400 mm)
  if(on){HX.textContent=((lx+4)*100).toFixed(3);HY.textContent=((2-lz)*100).toFixed(3)}
  HZ.textContent=(cut&&!isL?-3.0:(Z.position.y*100)).toFixed(3);HR.textContent=Math.round(rpm);HF.textContent=cut?(isL?3000:2400):0;HS.textContent=mode;HB.style.width=(Math.min(1,s/5)*100)+'%';
- film.uniforms.uT.value=tt%10;comp.render();
- fa=fa*.95+dt*.05;if(++frc>90&&fa>1/40&&PR>.6){PR=Math.max(.6,PR-.2);R.setPixelRatio(PR);comp.setPixelRatio(PR);frc=0;if(PR<=.8)bloom.enabled=false}}
+ film.uniforms.uT.value=tt%10;if(usePost)comp.render();else R.render(S,C);
+ fa=fa*.95+dt*.05;if(++frc>60&&fa>1/40){frc=0;if(usePost){usePost=false}else if(R.shadowMap.enabled){R.shadowMap.enabled=false;S.traverse(o=>{if(o.material){[].concat(o.material).forEach(m=>m.needsUpdate=true)}})}else if(PR>.5){PR=Math.max(.5,PR-.15);R.setPixelRatio(PR);comp.setPixelRatio(PR)}}}
 let fa=1/60,frc=0;
 document.fonts&&document.fonts.ready.then(()=>{last='x'});
 loop();
